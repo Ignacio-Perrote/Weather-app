@@ -1,0 +1,31 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.title-location {
+  border-radius: .5rem;
+  border: 2px solid rgb(77, 46, 0);
+  background-color: rgb(172, 169, 29);
+  color: black;
+  padding: 1rem 0;
+}
+
+.p-condition {
+  border-radius: .5rem;
+  border: 2px solid rgb(2, 94, 155);
+  padding: 0.5rem 0;
+  background-color: rgba(19, 75, 107, 0.678);
+}
+
+.form-weather {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
