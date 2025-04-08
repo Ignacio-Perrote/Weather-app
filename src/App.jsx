@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import WeatherInfo from "./components/weatherInfo";
+import { fetchWeatherData } from "./services/weatherService";
 
 function App() {
   const [location, setLocation] = useState("");
@@ -11,33 +12,26 @@ function App() {
   const API_KEY = import.meta.env.VITE_API_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const fetchWeatherData = async (cityName) => {
-    try {
-      const response = await fetch(`${API_URL}?q=${cityName}&appid=${API_KEY}`);
-      const data = await response.json();
+  useEffect(() => {
+    const getWeather = async () => {
+      if (location.trim())
+        try {
+          const { temperature, humidity } = await fetchWeatherData(
+            location,
+            API_URL,
+            API_KEY
+          );
+          setTemperature(temperature);
+          setHumidity(humidity);
+        } catch (err) {
+          setError(err.message || "Error al obtener datos del clima");
+          setTemperature(null);
+          setHumidity(null);
+        }
+    };
 
-      if (!data.main) {
-        setError(`La ciudad "${cityName}" no ha sido encontrada`);
-        setTemperature(null);
-        setHumidity(null);
-        return;
-      }
-
-      const tempCelsius = (data.main.temp - 273.15).toFixed(0);
-      setTemperature(Number(tempCelsius));
-      setHumidity(data.main.humidity);
-      setError("");
-    } catch (error) {
-      setError(error.message || "Error al obtener los datos del clima");
-      setTemperature(null);
-      setHumidity(null);
-    }
-  };
-
-  useEffect(() =>{
-    if (location.trim())
-      fetchWeatherData(location);
-  }, [location]);
+    getWeather();
+  }, [location, API_KEY, API_URL]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,12 +50,21 @@ function App() {
     <div className="app">
       <form onSubmit={handleSubmit} className="form-weather">
         <h1>Weather App</h1>
-        <input className="input-weather" onChange={handleChange} value={location} type="text" />
+        <input
+          className="input-weather"
+          onChange={handleChange}
+          value={location}
+          type="text"
+        />
         <button type="submit">Search</button>
       </form>
       {error && <p className="p-error">{error}</p>}
       {temperature && (
-       <WeatherInfo  location={location} temperature={temperature} humidity={humidity}/>
+        <WeatherInfo
+          location={location}
+          temperature={temperature}
+          humidity={humidity}
+        />
       )}
     </div>
   );
