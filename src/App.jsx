@@ -1,45 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
-import WeatherInfo from "./components/weatherInfo";
-import { fetchWeatherData } from "./services/weatherService";
+import WeatherInfo from "./components/WeatherInfo";
+import { useWeather } from "./hooks/useWeather";
 
 function App() {
   const [location, setLocation] = useState("");
-  const [temperature, setTemperature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const [error, setError] = useState("");
 
   const API_KEY = import.meta.env.VITE_API_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
 
-  useEffect(() => {
-    const getWeather = async () => {
-      if (location.trim())
-        try {
-          const { temperature, humidity } = await fetchWeatherData(
-            location,
-            API_URL,
-            API_KEY
-          );
-          setTemperature(temperature);
-          setHumidity(humidity);
-        } catch (err) {
-          setError(err.message || "Error al obtener datos del clima");
-          setTemperature(null);
-          setHumidity(null);
-        }
-    };
-
-    getWeather();
-  }, [location, API_KEY, API_URL]);
+  const { temperature, humidity, error } = useWeather(location, API_URL, API_KEY);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!location.trim()) {
-      setError("ingrese la ciudad");
-      setTemperature(null);
-      setHumidity(null);
-    }
   };
 
   const handleChange = (e) => {
